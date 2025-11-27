@@ -1,12 +1,17 @@
 package com.app.examenmoviles.presentation.screens.home
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.app.examenmoviles.presentation.screens.home.components.DropdownMenuDifficultySelector
+import com.app.examenmoviles.presentation.screens.home.components.DropdownMenuSizeSelector
 
 @Composable
 fun HomeScreen(
@@ -15,118 +20,161 @@ fun HomeScreen(
 ) {
     val state by viewModel.uiState.collectAsState()
 
-    Column(
-        modifier = Modifier.fillMaxSize().padding(24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
+    Box(
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.surface),
+        contentAlignment = Alignment.Center,
     ) {
-        Text("Generar Sudoku", style = MaterialTheme.typography.headlineMedium)
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        // 🔥 Mostrar botones si hay juego guardado
-        if (state.hasSavedGame) {
-            Button(
-                onClick = {
-                    viewModel.continueSavedGame {
-                        onNavigateToSudoku(0, "local")
-                    }
-                },
-                modifier = Modifier.fillMaxWidth(),
-            ) { Text("Continuar partida") }
-
-            Spacer(Modifier.height(12.dp))
-
-            Button(
-                onClick = { viewModel.deleteSavedGame() },
-                modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
-            ) {
-                Text("Eliminar partida")
-            }
+        Column(
+            modifier =
+                Modifier
+                    .fillMaxWidth(0.9f)
+                    .verticalScroll(rememberScrollState()) // 🔥 SCROLL
+                    .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            // 🔥 Título más grande
+            Text(
+                "Sudoku",
+                style = MaterialTheme.typography.displayMedium,
+                color = MaterialTheme.colorScheme.primary,
+            )
 
             Spacer(Modifier.height(32.dp))
-        }
 
-        // Selectores normales
-        Text("Tamaño del tablero")
-        Spacer(modifier = Modifier.height(8.dp))
+            // -----------------------------------------------------------
+            // 🔥 Tarjeta de juego guardado
+            // -----------------------------------------------------------
+            if (state.hasSavedGame) {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors =
+                        CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                        ),
+                    elevation = CardDefaults.cardElevation(4.dp),
+                    shape = MaterialTheme.shapes.medium,
+                ) {
+                    Column(
+                        modifier =
+                            Modifier
+                                .padding(24.dp)
+                                .fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                        Text(
+                            "Partida Guardada",
+                            style = MaterialTheme.typography.titleLarge,
+                        )
 
-        DropdownMenuSizeSelector(
-            selected = state.selectedSize,
-            onSelected = viewModel::updateSize,
-        )
+                        Spacer(Modifier.height(20.dp))
 
-        Spacer(modifier = Modifier.height(24.dp))
+                        Button(
+                            onClick = {
+                                viewModel.continueSavedGame {
+                                    onNavigateToSudoku(0, "local")
+                                }
+                            },
+                            modifier =
+                                Modifier
+                                    .fillMaxWidth()
+                                    .height(56.dp),
+                            shape = MaterialTheme.shapes.medium,
+                        ) {
+                            Text("Continuar partida")
+                        }
 
-        Text("Dificultad")
-        Spacer(modifier = Modifier.height(8.dp))
+                        Spacer(Modifier.height(16.dp))
 
-        DropdownMenuDifficultySelector(
-            selected = state.selectedDifficulty,
-            onSelected = viewModel::updateDifficulty,
-        )
+                        OutlinedButton(
+                            onClick = { viewModel.deleteSavedGame() },
+                            modifier =
+                                Modifier
+                                    .fillMaxWidth()
+                                    .height(56.dp),
+                            colors =
+                                ButtonDefaults.outlinedButtonColors(
+                                    contentColor = MaterialTheme.colorScheme.error,
+                                ),
+                            shape = MaterialTheme.shapes.medium,
+                        ) {
+                            Text("Eliminar partida")
+                        }
+                    }
+                }
 
-        Spacer(modifier = Modifier.height(40.dp))
-
-        Button(onClick = {
-            viewModel.onGenerateSudoku { size, difficulty ->
-                onNavigateToSudoku(size, difficulty)
+                Spacer(Modifier.height(32.dp))
             }
-        }) {
-            Text("Generar nuevo Sudoku")
-        }
-    }
-}
 
-@Suppress("ktlint:standard:function-naming")
-@Composable
-fun DropdownMenuSizeSelector(
-    selected: Int,
-    onSelected: (Int) -> Unit,
-) {
-    val sizes = listOf(4, 6, 9)
-    var expanded by remember { mutableStateOf(false) }
+            // -----------------------------------------------------------
+            // 🔥 Tarjeta de configuración
+            // -----------------------------------------------------------
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                elevation = CardDefaults.cardElevation(3.dp),
+                shape = MaterialTheme.shapes.medium,
+            ) {
+                Column(
+                    modifier =
+                        Modifier
+                            .padding(24.dp)
+                            .fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    Text(
+                        "Nueva Partida",
+                        style = MaterialTheme.typography.titleLarge,
+                    )
 
-    Box {
-        Button(onClick = { expanded = true }) {
-            Text("Tamaño: $selected")
-        }
-        DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-            sizes.forEach {
-                DropdownMenuItem(
-                    text = { Text("$it") },
+                    Spacer(Modifier.height(20.dp))
+
+                    // Tamaño
+                    Text(
+                        "Tamaño del tablero",
+                        style = MaterialTheme.typography.titleMedium,
+                    )
+                    Spacer(Modifier.height(12.dp))
+
+                    DropdownMenuSizeSelector(
+                        selectedLabel = "${state.selectedSize} x ${state.selectedSize}",
+                        onSelected = viewModel::updateSize,
+                    )
+
+                    Spacer(Modifier.height(28.dp))
+
+                    // Dificultad
+                    Text(
+                        "Dificultad",
+                        style = MaterialTheme.typography.titleMedium,
+                    )
+                    Spacer(Modifier.height(12.dp))
+
+                    DropdownMenuDifficultySelector(
+                        selected = state.selectedDifficulty,
+                        onSelected = viewModel::updateDifficulty,
+                    )
+                }
+
+                Button(
                     onClick = {
-                        onSelected(it)
-                        expanded = false
+                        viewModel.onGenerateSudoku { size, difficulty ->
+                            onNavigateToSudoku(size, difficulty)
+                        }
                     },
-                )
-            }
-        }
-    }
-}
-
-@Suppress("ktlint:standard:function-naming")
-@Composable
-fun DropdownMenuDifficultySelector(
-    selected: String,
-    onSelected: (String) -> Unit,
-) {
-    val difficulties = listOf("easy", "medium", "hard")
-    var expanded by remember { mutableStateOf(false) }
-
-    Box {
-        Button(onClick = { expanded = true }) {
-            Text("Dificultad: $selected")
-        }
-        DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-            difficulties.forEach {
-                DropdownMenuItem(
-                    text = { Text(it) },
-                    onClick = {
-                        onSelected(it)
-                        expanded = false
-                    },
-                )
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(24.dp)
+                            .height(56.dp),
+                    shape = MaterialTheme.shapes.medium,
+                ) {
+                    Text(
+                        "Generar nuevo Sudoku",
+                        style = MaterialTheme.typography.titleMedium,
+                    )
+                }
             }
         }
     }
