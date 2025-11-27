@@ -4,12 +4,15 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 
 @Suppress("ktlint:standard:function-naming")
@@ -77,28 +80,54 @@ fun SudokuScreen(
                                 Modifier
                                     .size(40.dp)
                                     .border(1.dp, Color.Black)
-                                    .background(
-                                        if (isFixed) Color(0xFFDDE6FF) else Color.Transparent,
-                                    ).let { baseModifier ->
-                                        if (!isFixed) {
-                                            baseModifier.clickable {
-                                                val newValue =
-                                                    if (value == null) {
-                                                        1
-                                                    } else {
-                                                        ((value + 1) % (state.size + 1))
-                                                            .takeIf { it != 0 }
-                                                    }
-
-                                                viewModel.updateCell(row, col, newValue)
-                                            }
-                                        } else {
-                                            baseModifier
-                                        }
-                                    },
+                                    .background(if (isFixed) Color(0xFFDDE6FF) else Color.White),
                             contentAlignment = Alignment.Center,
                         ) {
-                            Text(text = value?.toString() ?: "")
+                            if (isFixed) {
+                                Text(
+                                    text = value?.toString() ?: "",
+                                    color = Color.Black,
+                                )
+                            } else {
+                                var textValue by remember { mutableStateOf(value?.toString() ?: "") }
+
+                                BasicTextField(
+                                    value = textValue,
+                                    onValueChange = { newText ->
+                                        if (newText.isEmpty()) {
+                                            textValue = ""
+                                            viewModel.updateCell(row, col, null)
+                                            return@BasicTextField
+                                        }
+
+                                        val num = newText.toIntOrNull() ?: return@BasicTextField
+
+                                        if (num in 1..state.size) {
+                                            textValue = num.toString()
+                                            viewModel.updateCell(row, col, num)
+                                        }
+                                    },
+                                    textStyle =
+                                        LocalTextStyle.current.copy(
+                                            color = Color.Black,
+                                            textAlign = TextAlign.Center,
+                                            fontSize = 20.sp,
+                                        ),
+                                    modifier =
+                                        Modifier
+                                            .fillMaxSize()
+                                            .padding(0.dp),
+                                    singleLine = true,
+                                    decorationBox = { innerTextField ->
+                                        Box(
+                                            modifier = Modifier.fillMaxSize(),
+                                            contentAlignment = Alignment.Center,
+                                        ) {
+                                            innerTextField()
+                                        }
+                                    },
+                                )
+                            }
                         }
                     }
                 }
