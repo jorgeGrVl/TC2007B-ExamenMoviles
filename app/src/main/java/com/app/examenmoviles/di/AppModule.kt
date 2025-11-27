@@ -1,6 +1,7 @@
 package com.app.examenmoviles.di
 
 import android.content.Context
+import com.app.examenmoviles.data.local.preferences.SudokuPreferences
 import com.app.examenmoviles.data.remote.api.SudokuApi
 import com.app.examenmoviles.data.repository.SudokuRepositoryImpl
 import com.app.examenmoviles.domain.repository.SudokuRepository
@@ -34,12 +35,12 @@ object AppModule {
     @Singleton
     fun provideSudokuApi(retrofit: Retrofit): SudokuApi = retrofit.create(SudokuApi::class.java)
 
-//    @Provides
-//    @Singleton
-//    fun providePokemonPreferences(
-//        @ApplicationContext context: Context,
-//        gson: Gson,
-//    ): PokemonPreferences = PokemonPreferences(context, gson)
+    @Provides
+    @Singleton
+    fun provideSudokuPreferences(
+        @ApplicationContext context: Context,
+        gson: Gson,
+    ): SudokuPreferences = SudokuPreferences(context, gson)
 
     @Provides
     @Singleton

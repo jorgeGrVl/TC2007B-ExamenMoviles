@@ -146,7 +146,7 @@ fun SudokuScreen(
                 Text("Reiniciar")
             }
 
-            Button(onClick = { viewModel.newSudoku() }) {
+            Button(onClick = { viewModel.onNewPuzzleRequested() }) {
                 Text("Nuevo")
             }
         }
@@ -155,6 +155,26 @@ fun SudokuScreen(
             Text(
                 text = if (solved) "¡Correcto! 🎉" else "Solución incorrecta ❌",
                 color = if (solved) Color.Green else Color.Red,
+            )
+        }
+
+        if (viewModel.showSaveGameDialog) {
+            AlertDialog(
+                onDismissRequest = { viewModel.onDismissDialog() },
+                title = { Text("Guardar partida") },
+                text = { Text("¿Deseas guardar la partida actual antes de generar un nuevo tablero?") },
+                confirmButton = {
+                    TextButton(onClick = { viewModel.onSaveGameConfirmed() }) {
+                        Text("Guardar")
+                    }
+                },
+                dismissButton = {
+                    Row {
+                        TextButton(onClick = { viewModel.onDiscardGameConfirmed() }) {
+                            Text("No guardar")
+                        }
+                    }
+                },
             )
         }
     }

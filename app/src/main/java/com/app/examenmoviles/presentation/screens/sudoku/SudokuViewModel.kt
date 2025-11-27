@@ -1,7 +1,12 @@
 package com.app.examenmoviles.presentation.screens.sudoku
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.app.examenmoviles.data.local.model.SavedSudokuGame
+import com.app.examenmoviles.data.local.preferences.SudokuPreferences
 import com.app.examenmoviles.domain.common.Result
 import com.app.examenmoviles.domain.usecase.CheckSudokuStatusUseCase
 import com.app.examenmoviles.domain.usecase.GetSudokuUseCase
@@ -17,6 +22,7 @@ class SudokuViewModel
     constructor(
         private val getSudokuUseCase: GetSudokuUseCase,
         private val checkSudokuStatusUseCase: CheckSudokuStatusUseCase,
+        private val sudokuPreferences: SudokuPreferences,
     ) : ViewModel() {
         private val _uiState = MutableStateFlow(SudokuUiState())
         val uiState: StateFlow<SudokuUiState> = _uiState
@@ -105,5 +111,41 @@ class SudokuViewModel
                 size = _uiState.value.size,
                 difficulty = _uiState.value.difficulty,
             )
+        }
+
+        var showSaveGameDialog by mutableStateOf(false)
+            private set
+
+        fun onNewPuzzleRequested() {
+            showSaveGameDialog = true
+        }
+
+        fun onSaveGameConfirmed() {
+            saveCurrentGame()
+            showSaveGameDialog = false
+            newSudoku()
+        }
+
+        fun onDiscardGameConfirmed() {
+            showSaveGameDialog = false
+            newSudoku()
+        }
+
+        fun onDismissDialog() {
+            showSaveGameDialog = false
+        }
+
+        fun saveCurrentGame() {
+            val state = _uiState.value
+
+            val game =
+                SavedSudokuGame(
+                    board = state.board,
+                    initialBoard = state.initialBoard,
+                    size = state.size,
+                    difficulty = state.difficulty,
+                )
+
+            sudokuPreferences.saveGame(game)
         }
     }
