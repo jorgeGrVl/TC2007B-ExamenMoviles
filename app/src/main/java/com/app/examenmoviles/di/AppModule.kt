@@ -44,5 +44,8 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideSudokuRepository(api: SudokuApi): SudokuRepository = SudokuRepositoryImpl(api)
+    fun provideSudokuRepository(
+        api: SudokuApi,
+        preferences: SudokuPreferences,
+    ): SudokuRepository = SudokuRepositoryImpl(api, preferences)
 }

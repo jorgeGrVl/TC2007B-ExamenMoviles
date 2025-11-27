@@ -2,6 +2,8 @@ package com.app.examenmoviles.data.repository
 
 import android.util.Log
 import android.view.PixelCopy.request
+import com.app.examenmoviles.data.local.model.SavedSudokuGame
+import com.app.examenmoviles.data.local.preferences.SudokuPreferences
 import com.app.examenmoviles.data.mapper.toDomain
 import com.app.examenmoviles.data.remote.api.SudokuApi
 import com.app.examenmoviles.domain.model.Sudoku
@@ -14,6 +16,7 @@ class SudokuRepositoryImpl
     @Inject
     constructor(
         private val api: SudokuApi,
+        private val preferences: SudokuPreferences,
     ) : SudokuRepository {
         override suspend fun getSudoku(
             size: Int,
@@ -60,4 +63,10 @@ class SudokuRepositoryImpl
 
             return dto.toDomain()
         }
+
+        override suspend fun loadSavedGame(): SavedSudokuGame? = preferences.loadSavedGame()
+
+        override suspend fun saveGame(game: SavedSudokuGame) = preferences.saveGame(game)
+
+        override suspend fun deleteSavedGame() = preferences.clearSavedGame()
     }

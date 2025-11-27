@@ -3,6 +3,8 @@ package com.app.examenmoviles.presentation.screens.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.app.examenmoviles.data.local.preferences.SudokuPreferences
+import com.app.examenmoviles.domain.usecase.DeleteSavedGameUseCase
+import com.app.examenmoviles.domain.usecase.LoadSavedGameUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -13,7 +15,8 @@ import javax.inject.Inject
 class HomeViewModel
     @Inject
     constructor(
-        private val sudokuPreferences: SudokuPreferences,
+        private val loadSavedGameUseCase: LoadSavedGameUseCase,
+        private val deleteSavedGameUseCase: DeleteSavedGameUseCase,
     ) : ViewModel() {
         private val _uiState = MutableStateFlow(HomeUiState())
         val uiState: StateFlow<HomeUiState> = _uiState
@@ -23,17 +26,21 @@ class HomeViewModel
         }
 
         private fun loadSavedGameState() {
-            val saved = sudokuPreferences.loadSavedGame()
-            _uiState.value = _uiState.value.copy(hasSavedGame = saved != null)
+            viewModelScope.launch {
+                val saved = loadSavedGameUseCase()
+                _uiState.value = _uiState.value.copy(hasSavedGame = saved != null)
+            }
+        }
+
+        fun deleteSavedGame() {
+            viewModelScope.launch {
+                deleteSavedGameUseCase()
+                _uiState.value = _uiState.value.copy(hasSavedGame = false)
+            }
         }
 
         fun continueSavedGame(onContinue: () -> Unit) {
             onContinue()
-        }
-
-        fun deleteSavedGame() {
-            sudokuPreferences.clearSavedGame()
-            _uiState.value = _uiState.value.copy(hasSavedGame = false)
         }
 
         fun updateSize(size: Int) {

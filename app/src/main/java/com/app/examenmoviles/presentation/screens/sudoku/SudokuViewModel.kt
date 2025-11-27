@@ -10,7 +10,10 @@ import com.app.examenmoviles.data.local.model.SavedSudokuGame
 import com.app.examenmoviles.data.local.preferences.SudokuPreferences
 import com.app.examenmoviles.domain.common.Result
 import com.app.examenmoviles.domain.usecase.CheckSudokuStatusUseCase
+import com.app.examenmoviles.domain.usecase.DeleteSavedGameUseCase
 import com.app.examenmoviles.domain.usecase.GetSudokuUseCase
+import com.app.examenmoviles.domain.usecase.LoadSavedGameUseCase
+import com.app.examenmoviles.domain.usecase.SaveGameUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -23,7 +26,8 @@ class SudokuViewModel
     constructor(
         private val getSudokuUseCase: GetSudokuUseCase,
         private val checkSudokuStatusUseCase: CheckSudokuStatusUseCase,
-        private val sudokuPreferences: SudokuPreferences,
+        private val saveGameUseCase: SaveGameUseCase,
+        private val loadSavedGameUseCase: LoadSavedGameUseCase,
     ) : ViewModel() {
         private val _uiState = MutableStateFlow(SudokuUiState())
         val uiState: StateFlow<SudokuUiState> = _uiState
@@ -60,17 +64,20 @@ class SudokuViewModel
             }
         }
 
-        private fun loadLocalGame() {
-            val saved = sudokuPreferences.loadSavedGame() ?: return
-
-            _uiState.value =
-                SudokuUiState(
-                    size = saved.size,
-                    difficulty = saved.difficulty,
-                    board = saved.board,
-                    initialBoard = saved.initialBoard,
-                    isLoading = false,
-                )
+        fun loadLocalGame() {
+            viewModelScope.launch {
+                val saved = loadSavedGameUseCase()
+                if (saved != null) {
+                    _uiState.value =
+                        SudokuUiState(
+                            size = saved.size,
+                            difficulty = saved.difficulty,
+                            board = saved.board,
+                            initialBoard = saved.initialBoard,
+                            isLoading = false,
+                        )
+                }
+            }
         }
 
         fun updateCell(
@@ -154,16 +161,16 @@ class SudokuViewModel
         }
 
         fun saveCurrentGame() {
-            val state = _uiState.value
-
-            val game =
-                SavedSudokuGame(
-                    board = state.board,
-                    initialBoard = state.initialBoard,
-                    size = state.size,
-                    difficulty = state.difficulty,
-                )
-
-            sudokuPreferences.saveGame(game)
+            viewModelScope.launch {
+                val state = _uiState.value
+                val game =
+                    SavedSudokuGame(
+                        board = state.board,
+                        initialBoard = state.initialBoard,
+                        size = state.size,
+                        difficulty = state.difficulty,
+                    )
+                saveGameUseCase(game)
+            }
         }
     }
