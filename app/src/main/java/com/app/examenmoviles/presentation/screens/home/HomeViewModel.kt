@@ -2,48 +2,30 @@ package com.app.examenmoviles.presentation.screens.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.app.examenmoviles.domain.common.Result
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class HomeViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(HomeUiState())
-    val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
+    val uiState: StateFlow<HomeUiState> = _uiState
 
-    init {
-        loadData()
+    fun updateSize(size: Int) {
+        _uiState.value = _uiState.value.copy(selectedSize = size)
     }
 
-    fun loadData() {
+    fun updateDifficulty(difficulty: String) {
+        _uiState.value = _uiState.value.copy(selectedDifficulty = difficulty)
+    }
+
+    fun onGenerateSudoku(onSuccess: (Int, String) -> Unit) {
         viewModelScope.launch {
-            fakeFetch().let { result ->
-                _uiState.update { state ->
-                    when (result) {
-                        is Result.Loading -> state.copy(isLoading = true)
-                        is Result.Success ->
-                            state.copy(
-                                data = result.data,
-                                isLoading = false,
-                                error = null,
-                            )
-                        is Result.Error ->
-                            state.copy(
-                                error = result.exception.message,
-                                isLoading = false,
-                            )
-                    }
-                }
-            }
+            _uiState.value = _uiState.value.copy(isLoading = true)
+
+            // Aún no hay llamadas al API, simplemente simula éxito.
+            onSuccess(_uiState.value.selectedSize, _uiState.value.selectedDifficulty)
+
+            _uiState.value = _uiState.value.copy(isLoading = false)
         }
     }
-
-    private fun fakeFetch(): Result<String> =
-        try {
-            Result.Success("Hola desde el ViewModel")
-        } catch (e: Exception) {
-            Result.Error(e)
-        }
 }
