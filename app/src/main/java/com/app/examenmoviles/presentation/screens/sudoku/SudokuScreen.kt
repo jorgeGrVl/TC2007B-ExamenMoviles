@@ -86,7 +86,7 @@ fun SudokuScreen(
                                                     if (value == null) {
                                                         1
                                                     } else {
-                                                        ((value + 1) % state.size)
+                                                        ((value + 1) % (state.size + 1))
                                                             .takeIf { it != 0 }
                                                     }
 
@@ -103,6 +103,19 @@ fun SudokuScreen(
                     }
                 }
             }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Button(onClick = { viewModel.checkSudoku() }) {
+            Text("Verificar solución")
+        }
+
+        state.isSolved?.let { solved ->
+            Text(
+                text = if (solved) "¡Correcto! 🎉" else "Solución incorrecta ❌",
+                color = if (solved) Color.Green else Color.Red,
+            )
         }
     }
 }
