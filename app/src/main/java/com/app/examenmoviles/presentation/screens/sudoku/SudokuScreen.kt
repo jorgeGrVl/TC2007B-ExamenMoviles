@@ -132,6 +132,24 @@ fun SudokuScreen(
 
                 Spacer(Modifier.height(16.dp))
 
+                Spacer(Modifier.height(12.dp))
+
+                Button(
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = { viewModel.saveGameDirectly() },
+                ) {
+                    Text("Guardar Partida")
+                }
+
+                state.saveMessage?.let { message ->
+                    Spacer(Modifier.height(8.dp))
+                    Text(
+                        text = message,
+                        color = if (message.contains("✅")) Color(0xFF2E7D32) else Color.Red,
+                        fontSize = 16.sp,
+                    )
+                }
+
                 state.isSolved?.let { solved ->
                     Text(
                         text = if (solved) "✔ ¡Correcto!" else "❌ Incorrecto",

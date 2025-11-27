@@ -173,4 +173,25 @@ class SudokuViewModel
                 saveGameUseCase(game)
             }
         }
+
+        fun saveGameDirectly() {
+            val state = _uiState.value
+
+            viewModelScope.launch {
+                try {
+                    val game =
+                        SavedSudokuGame(
+                            board = state.board,
+                            initialBoard = state.initialBoard,
+                            size = state.size,
+                            difficulty = state.difficulty,
+                        )
+                    saveGameUseCase(game)
+
+                    _uiState.value = _uiState.value.copy(saveMessage = "¡Guardado correctamente! ✅")
+                } catch (e: Exception) {
+                    _uiState.value = _uiState.value.copy(saveMessage = "Error al guardar. Intente de nuevo ❌")
+                }
+            }
+        }
     }

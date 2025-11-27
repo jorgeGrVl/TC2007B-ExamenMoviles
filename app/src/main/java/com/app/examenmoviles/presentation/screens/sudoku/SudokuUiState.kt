@@ -9,4 +9,5 @@ data class SudokuUiState(
     val error: String? = null,
     val isSolved: Boolean? = null,
     val resetCounter: Int = 0,
+    val saveMessage: String? = null,
 )
