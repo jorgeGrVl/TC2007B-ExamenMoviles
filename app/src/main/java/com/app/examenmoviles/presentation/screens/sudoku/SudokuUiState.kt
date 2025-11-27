@@ -7,4 +7,5 @@ data class SudokuUiState(
     val initialBoard: List<List<Int?>> = emptyList(), // 👈 NUEVO
     val isLoading: Boolean = false,
     val error: String? = null,
+    val isSolved: Boolean? = null,
 )
