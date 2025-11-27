@@ -19,12 +19,11 @@ class SudokuRepositoryImpl
             size: Int,
             difficulty: String,
         ): Sudoku {
-            // Mapeo del size del sudoku a ancho y alto de caja
             val boxSize =
                 when (size) {
-                    9 -> 3 // 3x3 -> sudoku de 9
+                    9 -> 3
                     4 -> 2
-                    else -> throw IllegalArgumentException("Sudoku size no soportado: $size")
+                    else -> throw IllegalArgumentException("Tamaño no soportado: $size")
                 }
 
             val dto =
@@ -46,14 +45,10 @@ class SudokuRepositoryImpl
             val puzzleJson = Gson().toJson(puzzle)
             val boxSize =
                 when (width) {
-                    9 -> 3 // 3x3 -> sudoku de 9
+                    9 -> 3
                     4 -> 2
-                    else -> throw IllegalArgumentException("Sudoku size no soportado: $width")
+                    else -> throw IllegalArgumentException("Tamaño no soportado: $width")
                 }
-
-            Log.d("SudokuRequest", "Puzzle JSON: $puzzleJson")
-            Log.d("SudokuRequest", "Width: $width")
-            Log.d("SudokuRequest", "Height: $height")
 
             val dto =
                 api.solveSudoku(

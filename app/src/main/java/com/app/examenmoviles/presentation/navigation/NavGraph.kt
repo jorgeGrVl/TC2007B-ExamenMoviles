@@ -29,9 +29,9 @@ fun NavGraph(
     navController: NavHostController = rememberNavController(),
 ) {
     NavHost(
-        navController = navController, // El controlador que maneja la navegación
-        startDestination = Screen.Home.route, // Indica qué pantalla se muestra primero
-        modifier = modifier, // Para personalizar el aspecto si es necesario)
+        navController = navController,
+        startDestination = Screen.Home.route,
+        modifier = modifier,
     ) {
         composable(Screen.Home.route) {
             HomeScreen(

@@ -112,7 +112,6 @@ class SudokuViewModel
             val resetBoard =
                 List(state.size) { row ->
                     List(state.size) { col ->
-                        // Si era fijo → mantener valor original
                         state.initialBoard[row][col]
                     }
                 }
