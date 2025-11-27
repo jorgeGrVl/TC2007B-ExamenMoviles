@@ -31,6 +31,11 @@ class SudokuViewModel
             size: Int,
             difficulty: String,
         ) {
+            if (difficulty == "local") {
+                loadLocalGame()
+                return
+            }
+
             viewModelScope.launch {
                 getSudokuUseCase(size, difficulty).collect { result ->
                     when (result) {
@@ -52,6 +57,19 @@ class SudokuViewModel
                     }
                 }
             }
+        }
+
+        private fun loadLocalGame() {
+            val saved = sudokuPreferences.loadSavedGame() ?: return
+
+            _uiState.value =
+                SudokuUiState(
+                    size = saved.size,
+                    difficulty = "local",
+                    board = saved.board,
+                    initialBoard = saved.initialBoard,
+                    isLoading = false,
+                )
         }
 
         fun updateCell(

@@ -16,17 +16,38 @@ fun HomeScreen(
     val state by viewModel.uiState.collectAsState()
 
     Column(
-        modifier =
-            Modifier
-                .fillMaxSize()
-                .padding(24.dp),
+        modifier = Modifier.fillMaxSize().padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text("Generar Sudoku", style = MaterialTheme.typography.headlineMedium)
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Tamaño
+        // 🔥 Mostrar botones si hay juego guardado
+        if (state.hasSavedGame) {
+            Button(
+                onClick = {
+                    viewModel.continueSavedGame {
+                        onNavigateToSudoku(0, "local")
+                    }
+                },
+                modifier = Modifier.fillMaxWidth(),
+            ) { Text("Continuar partida") }
+
+            Spacer(Modifier.height(12.dp))
+
+            Button(
+                onClick = { viewModel.deleteSavedGame() },
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
+            ) {
+                Text("Eliminar partida")
+            }
+
+            Spacer(Modifier.height(32.dp))
+        }
+
+        // Selectores normales
         Text("Tamaño del tablero")
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -37,7 +58,6 @@ fun HomeScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Dificultad
         Text("Dificultad")
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -53,11 +73,12 @@ fun HomeScreen(
                 onNavigateToSudoku(size, difficulty)
             }
         }) {
-            Text("Generar")
+            Text("Generar nuevo Sudoku")
         }
     }
 }
 
+@Suppress("ktlint:standard:function-naming")
 @Composable
 fun DropdownMenuSizeSelector(
     selected: Int,
@@ -84,6 +105,7 @@ fun DropdownMenuSizeSelector(
     }
 }
 
+@Suppress("ktlint:standard:function-naming")
 @Composable
 fun DropdownMenuDifficultySelector(
     selected: String,
