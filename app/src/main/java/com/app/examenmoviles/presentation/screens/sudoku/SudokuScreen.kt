@@ -25,7 +25,10 @@ fun SudokuScreen(
 
     val state by viewModel.uiState.collectAsState()
 
-    if (state.board.isEmpty()) {
+    // -----------------------------
+    //      ESTADO: LOADING
+    // -----------------------------
+    if (state.isLoading) {
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center,
@@ -35,6 +38,25 @@ fun SudokuScreen(
         return
     }
 
+    // -----------------------------
+    //      ESTADO: ERROR
+    // -----------------------------
+    if (state.error != null) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center,
+        ) {
+            Text(
+                text = "Error: ${state.error}",
+                color = Color.Red,
+            )
+        }
+        return
+    }
+
+    // -----------------------------
+    //    SI NO HAY ERROR NI LOADING
+    // -----------------------------
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -64,13 +86,14 @@ fun SudokuScreen(
                                                     if (value == null) {
                                                         1
                                                     } else {
-                                                        ((value + 1) % state.size).takeIf { it != 0 }
+                                                        ((value + 1) % state.size)
+                                                            .takeIf { it != 0 }
                                                     }
 
                                                 viewModel.updateCell(row, col, newValue)
                                             }
                                         } else {
-                                            baseModifier // No clickable si es celda fija
+                                            baseModifier
                                         }
                                     },
                             contentAlignment = Alignment.Center,
