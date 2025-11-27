@@ -91,42 +91,41 @@ fun SudokuScreen(
                             } else {
                                 var textValue by remember { mutableStateOf(value?.toString() ?: "") }
 
-                                BasicTextField(
-                                    value = textValue,
-                                    onValueChange = { newText ->
-                                        if (newText.isEmpty()) {
-                                            textValue = ""
-                                            viewModel.updateCell(row, col, null)
-                                            return@BasicTextField
-                                        }
+                                key(state.resetCounter, row, col) {
+                                    // 👈 fuerza recreación del TextField
+                                    var textValue by remember { mutableStateOf(value?.toString() ?: "") }
 
-                                        val num = newText.toIntOrNull() ?: return@BasicTextField
+                                    BasicTextField(
+                                        value = textValue,
+                                        onValueChange = { newText ->
+                                            if (newText.isEmpty()) {
+                                                textValue = ""
+                                                viewModel.updateCell(row, col, null)
+                                                return@BasicTextField
+                                            }
 
-                                        if (num in 1..state.size) {
-                                            textValue = num.toString()
-                                            viewModel.updateCell(row, col, num)
-                                        }
-                                    },
-                                    textStyle =
-                                        LocalTextStyle.current.copy(
-                                            color = Color.Black,
-                                            textAlign = TextAlign.Center,
-                                            fontSize = 20.sp,
-                                        ),
-                                    modifier =
-                                        Modifier
-                                            .fillMaxSize()
-                                            .padding(0.dp),
-                                    singleLine = true,
-                                    decorationBox = { innerTextField ->
-                                        Box(
-                                            modifier = Modifier.fillMaxSize(),
-                                            contentAlignment = Alignment.Center,
-                                        ) {
-                                            innerTextField()
-                                        }
-                                    },
-                                )
+                                            val num = newText.toIntOrNull() ?: return@BasicTextField
+
+                                            if (num in 1..state.size) {
+                                                textValue = num.toString()
+                                                viewModel.updateCell(row, col, num)
+                                            }
+                                        },
+                                        textStyle =
+                                            LocalTextStyle.current.copy(
+                                                color = Color.Black,
+                                                textAlign = TextAlign.Center,
+                                                fontSize = 20.sp,
+                                            ),
+                                        modifier = Modifier.fillMaxSize(),
+                                        singleLine = true,
+                                        decorationBox = { innerTextField ->
+                                            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                                                innerTextField()
+                                            }
+                                        },
+                                    )
+                                }
                             }
                         }
                     }
@@ -136,8 +135,20 @@ fun SudokuScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Button(onClick = { viewModel.checkSudoku() }) {
-            Text("Verificar solución")
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            Button(onClick = { viewModel.checkSudoku() }) {
+                Text("Verificar solución")
+            }
+
+            Button(onClick = { viewModel.resetSudoku() }) {
+                Text("Reiniciar")
+            }
+
+            Button(onClick = { viewModel.newSudoku() }) {
+                Text("Nuevo")
+            }
         }
 
         state.isSolved?.let { solved ->

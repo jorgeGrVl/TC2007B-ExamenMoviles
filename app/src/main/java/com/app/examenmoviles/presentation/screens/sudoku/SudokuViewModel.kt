@@ -80,4 +80,30 @@ class SudokuViewModel
                 }
             }
         }
+
+        fun resetSudoku() {
+            val state = _uiState.value
+
+            val resetBoard =
+                List(state.size) { row ->
+                    List(state.size) { col ->
+                        // Si era fijo → mantener valor original
+                        state.initialBoard[row][col]
+                    }
+                }
+
+            _uiState.value =
+                state.copy(
+                    board = resetBoard,
+                    isSolved = null,
+                    resetCounter = state.resetCounter + 1,
+                )
+        }
+
+        fun newSudoku() {
+            initialize(
+                size = _uiState.value.size,
+                difficulty = _uiState.value.difficulty,
+            )
+        }
     }
