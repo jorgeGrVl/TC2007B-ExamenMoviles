@@ -1,5 +1,6 @@
 package com.app.examenmoviles.presentation.screens.sudoku
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -65,7 +66,7 @@ class SudokuViewModel
             _uiState.value =
                 SudokuUiState(
                     size = saved.size,
-                    difficulty = "local",
+                    difficulty = saved.difficulty,
                     board = saved.board,
                     initialBoard = saved.initialBoard,
                     isLoading = false,

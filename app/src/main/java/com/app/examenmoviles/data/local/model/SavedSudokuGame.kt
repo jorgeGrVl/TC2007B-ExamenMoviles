@@ -4,5 +4,5 @@ data class SavedSudokuGame(
     val board: List<List<Int?>>,
     val initialBoard: List<List<Int?>>,
     val size: Int,
-    val difficulty: String?,
+    val difficulty: String,
 )

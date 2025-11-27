@@ -44,7 +44,7 @@ fun NavGraph(
         composable(Screen.Sudoku.route) { backStack ->
             val size = backStack.arguments?.getString("size")?.toInt() ?: 9
             val difficulty = backStack.arguments?.getString("difficulty") ?: "easy"
-            SudokuScreen(size = size, difficulty = difficulty, onBack = { navController.popBackStack() })
+            SudokuScreen(size = size, difficulty = difficulty, onBack = { navController.navigate(Screen.Home.route) })
         }
     }
 }
